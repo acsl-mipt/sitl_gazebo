@@ -130,8 +130,8 @@
       <plugin name="mavlink_interface" filename="librotors_gazebo_mavlink_interface.so">
         <imuSubTopic>${imu_sub_topic}</imuSubTopic>
         <motorSpeedCommandPubTopic>~/command/motor_speed</motorSpeedCommandPubTopic>
-        <udpPort>14560</udpPort>
-        <udpPort2>14556</udpPort2>
+        <udpPort>15019</udpPort>
+        <udpPort2>15010</udpPort2>
         <portStep>10</portStep>
       </plugin>
     </gazebo>
