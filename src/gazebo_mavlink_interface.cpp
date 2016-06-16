@@ -200,10 +200,10 @@ void GazeboMavlinkInterface::OnUpdate(const common::UpdateInfo& /*_info*/) {
   last_time_ = current_time;
   double t = current_time.Double();
 
-  math::Pose T_W_I = model_->GetWorldPose(); //TODO(burrimi): Check tf.
+  math::Pose T_W_I = model_->GetLink("base_link")->GetWorldPose(); //TODO(burrimi): Check tf.
   math::Vector3 pos_W_I = T_W_I.pos;  // Use the models' world position for GPS and pressure alt.
 
-  math::Vector3 velocity_current_W = model_->GetWorldLinearVel();  // Use the models' world position for GPS velocity.
+  math::Vector3 velocity_current_W = model_->GetLink("base_link")->GetWorldLinearVel();  // Use the models' world position for GPS velocity.
 
   math::Vector3 velocity_current_W_xy = velocity_current_W;
   velocity_current_W_xy.z = 0;
@@ -353,7 +353,7 @@ void GazeboMavlinkInterface::send_mavlink_message(const uint8_t msgid, const voi
 
 void GazeboMavlinkInterface::ImuCallback(ImuPtr& imu_message) {
 
-  math::Pose T_W_I = model_->GetWorldPose();
+  math::Pose T_W_I = model_->GetLink("base_link")->GetWorldPose();
   math::Vector3 pos_W_I = T_W_I.pos;  // Use the models'world position for GPS and pressure alt.
   
   math::Quaternion C_W_I;
@@ -371,7 +371,7 @@ void GazeboMavlinkInterface::ImuCallback(ImuPtr& imu_message) {
   // TODO replace mag_W_ in the line below with mag_decl
 
   math::Vector3 mag_I = C_W_I.RotateVectorReverse(mag_decl); // TODO: Add noise based on bais and variance like for imu and gyro
-  math::Vector3 body_vel = C_W_I.RotateVectorReverse(model_->GetWorldLinearVel());
+  math::Vector3 body_vel = C_W_I.RotateVectorReverse(model_->GetLink("base_link")->GetWorldLinearVel());
   
   standard_normal_distribution_ = std::normal_distribution<float>(0, 0.01f);
 
