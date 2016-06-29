@@ -97,11 +97,7 @@ void CameraPlugin::Load(sensors::SensorPtr _sensor, sdf::ElementPtr _sdf)
   this->format = this->camera->GetImageFormat();
 #endif
 
-
-  if (_sdf->HasElement("robotNamespace"))
-    namespace_ = _sdf->GetElement("robotNamespace")->Get<std::string>();
-  else
-    gzwarn << "[gazebo_optical_flow_plugin] Please specify a robotNamespace.\n";
+  getSdfParam<std::string>(_sdf, "robotNamespace", namespace_, extract_namespace(parentSensor->ParentName()));
 
   node_handle_ = transport::NodePtr(new transport::Node());
   node_handle_->Init(namespace_);

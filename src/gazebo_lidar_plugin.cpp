@@ -88,15 +88,12 @@ void RayPlugin::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf)
 #endif
       boost::bind(&RayPlugin::OnNewLaserScans, this));
 
-  if (_sdf->HasElement("robotNamespace"))
-    namespace_ = _sdf->GetElement("robotNamespace")->Get<std::string>();
-  else
-    gzwarn << "[gazebo_lidar_plugin] Please specify a robotNamespace.\n";
+  getSdfParam<std::string>(_sdf, "robotNamespace", namespace_, extract_namespace(parentSensor->ParentName()));
 
   node_handle_ = transport::NodePtr(new transport::Node());
   node_handle_->Init(namespace_);
 
-  lidar_pub_ = node_handle_->Advertise<lidar_msgs::msgs::lidar>("lidar", 10);
+  lidar_pub_ = node_handle_->Advertise<lidar_msgs::msgs::lidar>(topicName, 10);
 }
 
 /////////////////////////////////////////////////

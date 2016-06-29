@@ -29,6 +29,8 @@
 
 #include "lidar.pb.h"
 
+#include "common.h"
+
 namespace gazebo
 {
   /// \brief A Ray Sensor Plugin
@@ -56,7 +58,7 @@ namespace gazebo
       transport::NodePtr node_handle_;
       transport::PublisherPtr lidar_pub_;
       std::string namespace_;
-
+      const std::string topicName = "~/lidar";
 
     /// \brief The connection tied to RayPlugin::OnNewLaserScans()
     private: 
