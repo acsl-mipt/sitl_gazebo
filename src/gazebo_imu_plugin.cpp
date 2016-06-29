@@ -48,7 +48,7 @@ void GazeboImuPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf) {
   // default params
   namespace_.clear();
 
-  getSdfParam<std::string>(_sdf, "robotNamespace", namespace_, model_->GetName());
+  getSdfParam<std::string>(_sdf, "robotNamespace", namespace_, extract_namespace(model_->GetName()));
 
   node_handle_ = transport::NodePtr(new transport::Node());
   node_handle_->Init(namespace_);

@@ -37,7 +37,7 @@ void GazeboMavlinkInterface::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf
   world_ = model_->GetWorld();
 
   namespace_.clear();
-  getSdfParam<std::string>(_sdf, "robotNamespace", namespace_, model_->GetName());
+  getSdfParam<std::string>(_sdf, "robotNamespace", namespace_, extract_namespace(model_->GetName()));
 
   node_handle_ = transport::NodePtr(new transport::Node());
   node_handle_->Init(namespace_);
@@ -91,14 +91,7 @@ void GazeboMavlinkInterface::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf
   getSdfParam<int>(_sdf, "portStep", port_step, default_port_step);
 
   //extract number of SITL instance from end of Model name
-  char digits[]="0123456789";
-  std::string model_name = model_->GetName();
-  std::size_t starti = model_name.find_first_of(digits);
-
-  int model_num = 1;
-  if ( starti != std::string::npos )
-    model_num = std::stoi(model_name.substr(starti),nullptr);
-  int delta = (model_num - 1)*port_step;
+  int delta = (extract_num(namespace_) - 1)*port_step;
 
   //set SITL ports, according to its number
   udp_port += delta;

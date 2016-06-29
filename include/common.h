@@ -126,3 +126,29 @@ void copyPosition(const In& in, Out* out) {
   out->y = in.y;
   out->z = in.z;
 }
+
+std::string extract_namespace(std::string str)
+{
+  std::size_t i0,i1;
+  std::string ns("ns");
+
+  i0 = str.find("[");
+  i1 = str.find("]");
+
+  if(i0 != std::string::npos && i1 != std::string::npos && i0<i1)
+    ns = str.substr(i0+1,i1-i0-1);
+
+  return ns;
+}
+
+int extract_num(std::string str)
+{
+  char digits[]="123456789";
+  std::size_t starti = str.find_first_of(digits);
+
+  int num = 1;
+  if ( starti != std::string::npos )
+    num = std::stoi(str.substr(starti),nullptr);
+
+  return num;
+}
