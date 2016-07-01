@@ -78,6 +78,7 @@ static const std::string kDefaultLidarTopic = "~/lidar";
 static const std::string kDefaultOpticalFlowTopic = "~/opticalFlow";
 static const std::string kDefaultMavlinkHilSensorPubTopic = "~/HilSensor";
 static const std::string kDefaultMavlinkHilGpsPubTopic = "~/HilGps";
+static const std::string kDefaultLinkName = "base_link";
 
 static bool use_mavlink_udp = true;
 
@@ -128,6 +129,7 @@ class GazeboMavlinkInterface : public ModelPlugin {
   physics::JointPtr right_elevon_joint_;
   physics::JointPtr elevator_joint_;
   physics::JointPtr propeller_joint_;
+  physics::LinkPtr link_;
 
   /// \brief Pointer to the update event connection.
   event::ConnectionPtr updateConnection_;
