@@ -132,7 +132,7 @@
         <motorSpeedCommandPubTopic>~/command/motor_speed</motorSpeedCommandPubTopic>
         <linkName>base_link</linkName>
         <udpPort>15019</udpPort>
-        <udpPort2>15010</udpPort2>
+        <udpPort2>15012</udpPort2>
         <portStep>10</portStep>
       </plugin>
     </gazebo>
