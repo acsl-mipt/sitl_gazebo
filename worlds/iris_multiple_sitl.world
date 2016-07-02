@@ -12,12 +12,12 @@
     <include>
       <uri>model://iris</uri>
       <pose>0 0 0 0 0 0</pose>
-      <name>iris1</name>
+      <name>[iris1]</name>
     </include>
     <include>
       <uri>model://iris</uri>
       <pose>5 0 0 0 0 0</pose>
-      <name>iris2</name>
+      <name>[iris2]</name>
     </include>
   </world>
 </sdf>
