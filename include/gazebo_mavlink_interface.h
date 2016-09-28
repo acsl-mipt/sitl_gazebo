@@ -156,6 +156,7 @@ class GazeboMavlinkInterface : public ModelPlugin {
   void send_mavlink_message(const uint8_t msgid, const void *msg, uint8_t component_ID);
   void handle_message(mavlink_message_t *msg);
   void pollForMAVLinkMessages(double _dt, uint32_t _timeoutMs);
+  int mavlink_udp_port(std::string world_name, std::string model_name);
 
   static const unsigned n_out_max = 16;
 

@@ -21,6 +21,7 @@
 
 #include "gazebo_mavlink_interface.h"
 #include "geo_mag_declination.h"
+#include <tinyxml.h>
 
 namespace gazebo {
 
@@ -424,6 +425,8 @@ void GazeboMavlinkInterface::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf
   if (_sdf->HasElement("mavlink_udp_port")) {
     mavlink_udp_port_ = _sdf->GetElement("mavlink_udp_port")->Get<int>();
   }
+
+  mavlink_udp_port_ = mavlink_udp_port(world_->GetName(), model_->GetName());
 
   // try to setup udp socket for communcation with simulator
   if ((_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
@@ -985,6 +988,36 @@ void GazeboMavlinkInterface::handle_control(double _dt)
         #endif
       }
     }
+}
+
+int GazeboMavlinkInterface::mavlink_udp_port(std::string world_name, std::string model_name)
+{
+  int port = mavlink_udp_port_;
+
+  TiXmlDocument doc(world_name+".world");
+  if (doc.LoadFile())
+  {
+    TiXmlHandle hDoc(&doc);
+
+    TiXmlElement* pElem=hDoc.FirstChild( "sdf" ).FirstChild("world").FirstChild("include").Element();
+    for( pElem; pElem; pElem=pElem->NextSiblingElement("include"))
+    {
+      TiXmlElement* pName = pElem->FirstChildElement("name");
+      if (pName && model_name.compare(pName->GetText()) == 0)
+      {
+        TiXmlElement* pPort = pElem->FirstChildElement("mavlink_udp_port");
+
+        if (pPort)
+        {
+          port = std::stoi(pPort->GetText());
+          gzdbg << "get mavlink_udp_port " << port <<" for " << model_name << " model from " << world_name << ".world\n";
+          break;
+        }
+      }
+    }
+  }
+
+  return port;
 }
 
 }
