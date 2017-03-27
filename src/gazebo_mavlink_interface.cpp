@@ -468,6 +468,7 @@ void GazeboMavlinkInterface::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf
   }
 
   model_param(world_->GetName(), model_->GetName(), "mavlink_udp_port", mavlink_udp_port_);
+  model_param(world_->GetName(), model_->GetName(), "gps_update_interval", gps_update_interval_);
 
   // try to setup udp socket for communcation with simulator
   if ((_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
