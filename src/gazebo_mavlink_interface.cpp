@@ -467,8 +467,16 @@ void GazeboMavlinkInterface::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf
     mavlink_udp_port_ = _sdf->GetElement("mavlink_udp_port")->Get<int>();
   }
 
+
   model_param(world_->GetName(), model_->GetName(), "mavlink_udp_port", mavlink_udp_port_);
   model_param(world_->GetName(), model_->GetName(), "gps_update_interval", gps_update_interval_);
+
+  int hil_gps_port = mavlink_udp_port_;
+  model_param(world_->GetName(), model_->GetName(), "hil_gps_port", hil_gps_port);
+  _srcaddr_hil_gps.sin_family = AF_INET;
+  _srcaddr_hil_gps.sin_addr.s_addr = mavlink_addr_;
+  _srcaddr_hil_gps.sin_port = htons(hil_gps_port);
+
 
   // try to setup udp socket for communcation with simulator
   if ((_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
@@ -614,8 +622,10 @@ void GazeboMavlinkInterface::send_mavlink_message(const uint8_t msgid, const voi
   buf[MAVLINK_NUM_HEADER_BYTES + payload_len + 1] = (uint8_t)(checksum >> 8);
 
   ssize_t len;
+  struct sockaddr_in *p_addr;
 
-  len = sendto(_fd, buf, packet_len, 0, (struct sockaddr *)&_srcaddr, sizeof(_srcaddr));
+  p_addr = msgid == MAVLINK_MSG_ID_HIL_GPS ? &_srcaddr_hil_gps : &_srcaddr;
+  len = sendto(_fd, buf, packet_len, 0, (struct sockaddr *) p_addr, sizeof(*p_addr));
 
   if (len <= 0) {
     printf("Failed sending mavlink message\n");

@@ -196,6 +196,7 @@ class GazeboMavlinkInterface : public ModelPlugin {
   int _fd;
   struct sockaddr_in _myaddr;  ///< The locally bound address
   struct sockaddr_in _srcaddr;  ///< SITL instance
+  struct sockaddr_in _srcaddr_hil_gps;
   socklen_t _addrlen;
   unsigned char _buf[65535];
   struct pollfd fds[1];
