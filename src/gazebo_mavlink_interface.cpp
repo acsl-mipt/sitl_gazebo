@@ -467,7 +467,7 @@ void GazeboMavlinkInterface::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf
     mavlink_udp_port_ = _sdf->GetElement("mavlink_udp_port")->Get<int>();
   }
 
-  mavlink_udp_port_ = mavlink_udp_port(world_->GetName(), model_->GetName());
+  model_param(world_->GetName(), model_->GetName(), "mavlink_udp_port", mavlink_udp_port_);
 
   // try to setup udp socket for communcation with simulator
   if ((_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
@@ -943,10 +943,9 @@ void GazeboMavlinkInterface::handle_control(double _dt)
     }
 }
 
-int GazeboMavlinkInterface::mavlink_udp_port(std::string world_name, std::string model_name)
+template <typename T>
+void GazeboMavlinkInterface::model_param(const std::string& world_name, const std::string& model_name, const std::string& param, T& param_value)
 {
-  int port = mavlink_udp_port_;
-
   TiXmlDocument doc(world_name+".world");
   if (doc.LoadFile())
   {
@@ -958,19 +957,20 @@ int GazeboMavlinkInterface::mavlink_udp_port(std::string world_name, std::string
       TiXmlElement* pName = pElem->FirstChildElement("name");
       if (pName && model_name.compare(pName->GetText()) == 0)
       {
-        TiXmlElement* pPort = pElem->FirstChildElement("mavlink_udp_port");
+        TiXmlElement* pValue = pElem->FirstChildElement(param);
 
-        if (pPort)
+        if (pValue)
         {
-          port = std::stoi(pPort->GetText());
-          gzdbg << "get mavlink_udp_port " << port <<" for " << model_name << " model from " << world_name << ".world\n";
+          std::istringstream iss(pValue->GetText());
+          iss >> param_value;
+
+          gzdbg << "get " << param << " " << param_value <<" for " << model_name << " model from " << world_name << ".world\n";
           break;
         }
       }
     }
   }
 
-  return port;
 }
 
 }

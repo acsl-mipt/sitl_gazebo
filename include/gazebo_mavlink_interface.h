@@ -155,7 +155,7 @@ class GazeboMavlinkInterface : public ModelPlugin {
   void send_mavlink_message(const uint8_t msgid, const void *msg, uint8_t component_ID);
   void handle_message(mavlink_message_t *msg);
   void pollForMAVLinkMessages(double _dt, uint32_t _timeoutMs);
-  int mavlink_udp_port(std::string world_name, std::string model_name);
+  template <typename T> void model_param(const std::string& world_name, const std::string& model_name, const std::string& param, T& param_value);
 
   static const unsigned n_out_max = 16;
 
@@ -177,7 +177,7 @@ class GazeboMavlinkInterface : public ModelPlugin {
   std::string imu_sub_topic_;
   std::string lidar_sub_topic_;
   std::string opticalFlow_sub_topic_;
-  
+
   common::Time last_time_;
   common::Time last_gps_time_;
   common::Time last_actuator_time_;
