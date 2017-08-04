@@ -36,10 +36,10 @@ namespace gazebo {
 // The home position can be specified using the environment variables:
 // PX4_HOME_LAT, PX4_HOME_LON, and PX4_HOME_ALT
 
-// Zurich Irchel Park
-static double lat_home = 47.397742 * M_PI / 180;  // rad
-static double lon_home = 8.545594 * M_PI / 180;  // rad
-static double alt_home = 488.0; // meters
+// MIPT stadium
+static double lat_home = 55.92801 * M_PI / 180;  // rad
+static double lon_home = 37.52450 * M_PI / 180;  // rad
+static double alt_home = 191.0; // meters
 // Seattle downtown (15 deg declination): 47.592182, -122.316031
 // static const double lat_home = 47.592182 * M_PI / 180;  // rad
 // static const double lon_home = -122.316031 * M_PI / 180;  // rad
