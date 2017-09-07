@@ -436,6 +436,8 @@ void GazeboMavlinkInterface::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf
   last_time_ = world_->GetSimTime();
   last_gps_time_ = world_->GetSimTime();
   gps_update_interval_ = 0.2;  // in seconds for 5Hz
+  last_imu_time_ = last_time_;
+  imu_rate_ = 0;
 
   gravity_W_ = world_->GetPhysicsEngine()->GetGravity();
 
@@ -470,6 +472,7 @@ void GazeboMavlinkInterface::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf
 
   model_param(world_->GetName(), model_->GetName(), "mavlink_udp_port", mavlink_udp_port_);
   model_param(world_->GetName(), model_->GetName(), "gps_update_interval", gps_update_interval_);
+  model_param(world_->GetName(), model_->GetName(), "imu_rate", imu_rate_);
 
   int hil_gps_port = mavlink_udp_port_;
   model_param(world_->GetName(), model_->GetName(), "hil_gps_port", hil_gps_port);
@@ -633,6 +636,12 @@ void GazeboMavlinkInterface::send_mavlink_message(const uint8_t msgid, const voi
 }
 
 void GazeboMavlinkInterface::ImuCallback(ImuPtr& imu_message) {
+  common::Time current_time = world_->GetSimTime();
+  double dt = (current_time - last_imu_time_).Double();
+
+  if (imu_rate_ > 0 && dt*imu_rate_ < 1.0)
+    return;
+  last_imu_time_ = current_time;
 
   // frames
   // g - gazebo (ENU), east, north, up

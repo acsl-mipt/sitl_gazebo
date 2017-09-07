@@ -181,7 +181,9 @@ class GazeboMavlinkInterface : public ModelPlugin {
   common::Time last_time_;
   common::Time last_gps_time_;
   common::Time last_actuator_time_;
+  common::Time last_imu_time_;
   double gps_update_interval_;
+  double imu_rate_;
   double lat_rad;
   double lon_rad;
   void handle_control(double _dt);
