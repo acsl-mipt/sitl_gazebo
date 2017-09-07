@@ -750,6 +750,7 @@ void GazeboMavlinkInterface::ImuCallback(ImuPtr& imu_message) {
 
   send_mavlink_message(MAVLINK_MSG_ID_HIL_SENSOR, &sensor_msg, 200);
 
+  /*
   // ground truth
   math::Vector3 accel_true_b = q_br.RotateVector(model_->GetRelativeLinearAccel());
 
@@ -782,6 +783,7 @@ void GazeboMavlinkInterface::ImuCallback(ImuPtr& imu_message) {
   hil_state_quat.zacc = accel_true_b.z * 1000;
 
   send_mavlink_message(MAVLINK_MSG_ID_HIL_STATE_QUATERNION, &hil_state_quat, 200);
+  */
 }
 
 void GazeboMavlinkInterface::LidarCallback(LidarPtr& lidar_message) {
