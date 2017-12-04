@@ -968,13 +968,13 @@ void GazeboMavlinkInterface::handle_control(double _dt)
 template <typename T>
 void GazeboMavlinkInterface::model_param(const std::string& world_name, const std::string& model_name, const std::string& param, T& param_value)
 {
-  TiXmlDocument doc(world_name+".world");
+  TiXmlDocument doc("options.xml");
   if (doc.LoadFile())
   {
     TiXmlHandle hDoc(&doc);
 
-    TiXmlElement* pElem=hDoc.FirstChild( "sdf" ).FirstChild("world").FirstChild("include").Element();
-    for( pElem; pElem; pElem=pElem->NextSiblingElement("include"))
+    TiXmlElement* pElem=hDoc.FirstChild( "options" ).FirstChild("model").Element();
+    for( pElem; pElem; pElem=pElem->NextSiblingElement("model"))
     {
       TiXmlElement* pName = pElem->FirstChildElement("name");
       if (pName && model_name.compare(pName->GetText()) == 0)
