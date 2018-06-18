@@ -59,11 +59,7 @@ void GpsPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   const char *env_alt = std::getenv("PX4_HOME_ALT");
 
   // Get noise param
-  if (_sdf->HasElement("gpsNoise")) {
-    getSdfParam<bool>(_sdf, "gpsNoise", gps_noise_, gps_noise_);
-  } else {
-    gps_noise_ = false;
-  }
+  get_any_param(_sdf, worldName, model_->GetName(), "gpsNoise", gps_noise_);
 
   if (env_lat) {
     gzmsg << "Home latitude is set to " << env_lat << ".\n";
