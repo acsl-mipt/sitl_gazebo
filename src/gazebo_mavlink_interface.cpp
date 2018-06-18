@@ -231,32 +231,17 @@ void GazeboMavlinkInterface::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf
   mag_d_.Y() = 0;
   mag_d_.Z() = -0.42741;
 
-  if(_sdf->HasElement("hil_state_level"))
-  {
-    hil_mode_ = _sdf->GetElement("hil_mode")->Get<bool>();
-  }
-
-  if(_sdf->HasElement("hil_state_level"))
-  {
-    hil_state_level_ = _sdf->GetElement("hil_state_level")->Get<bool>();
-  }
+  get_any_param(_sdf, worldName, model_->GetName(), "hil_mode", hil_mode_);
+  get_any_param(_sdf, worldName, model_->GetName(), "hil_state_level", hil_state_level_);
 
   // Get serial params
-  if(_sdf->HasElement("serialEnabled"))
-  {
-    serial_enabled_ = _sdf->GetElement("serialEnabled")->Get<bool>();
-  }
+  get_any_param(_sdf, worldName, model_->GetName(), "serialEnabled", serial_enabled_);
 
   if(serial_enabled_) {
     // Set up serial interface
-    if(_sdf->HasElement("serialDevice"))
-    {
-      device_ = _sdf->GetElement("serialDevice")->Get<std::string>();
-    }
+    get_any_param(_sdf, worldName, model_->GetName(), "serialDevice", device_);
 
-    if (_sdf->HasElement("baudRate")) {
-      baudrate_ = _sdf->GetElement("baudRate")->Get<int>();
-    }
+    get_any_param(_sdf, worldName, model_->GetName(), "baudRate", baudrate_);
     io_service.post(std::bind(&GazeboMavlinkInterface::do_read, this));
 
     // run io_service for async io
