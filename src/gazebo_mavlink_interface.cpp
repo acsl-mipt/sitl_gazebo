@@ -34,6 +34,12 @@ void GazeboMavlinkInterface::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf
 
   world_ = model_->GetWorld();
 
+#if GAZEBO_MAJOR_VERSION >= 9
+  auto worldName = world_->Name();
+#else
+  auto worldName = world_->GetName();
+#endif
+
   const char *env_alt = std::getenv("PX4_HOME_ALT");
   if (env_alt) {
     gzmsg << "Home altitude is set to " << env_alt << ".\n";
@@ -273,15 +279,8 @@ void GazeboMavlinkInterface::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf
       }
     }
   }
-  if (_sdf->HasElement("mavlink_udp_port")) {
-    mavlink_udp_port_ = _sdf->GetElement("mavlink_udp_port")->Get<int>();
-  }
-#if GAZEBO_MAJOR_VERSION >= 9
-  auto worldName = world_->Name();
-#else
-  auto worldName = world_->GetName();
-#endif
-  model_param(worldName, model_->GetName(), "mavlink_udp_port", mavlink_udp_port_);
+
+  get_any_param(_sdf, worldName, model_->GetName(), "mavlink_udp_port", mavlink_udp_port_);
 
   qgc_addr_ = htonl(INADDR_ANY);
   if (_sdf->HasElement("qgc_addr")) {
