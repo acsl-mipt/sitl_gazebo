@@ -101,6 +101,18 @@ void model_param(const std::string& world_name, const std::string& model_name, c
 
 }
 
+template <typename T>
+void get_any_param(sdf::ElementPtr sdf, const std::string& world_name, const std::string& model_name, const std::string& param_name, T& param_value)
+{
+  //from sdf
+  if (sdf->HasElement(param_name)) {
+    param_value = sdf->GetElement(param_name)->Get<T>();
+  }
+
+  //override from options
+  model_param(world_name, model_name, param_name, param_value);
+}
+
 /**
  * \brief Get a math::Angle as an angle from [0, 360)
  */
