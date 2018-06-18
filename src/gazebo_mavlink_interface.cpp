@@ -45,6 +45,7 @@ void GazeboMavlinkInterface::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf
     gzmsg << "Home altitude is set to " << env_alt << ".\n";
     alt_home = std::stod(env_alt);
   }
+  model_param(worldName, model_->GetName(), "home_alt", alt_home);
 
   namespace_.clear();
   if (_sdf->HasElement("robotNamespace")) {

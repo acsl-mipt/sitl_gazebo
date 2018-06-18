@@ -46,9 +46,11 @@ void GpsPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 #if GAZEBO_MAJOR_VERSION >= 9
   last_time_ = world_->SimTime();
   last_gps_time_ = world_->SimTime();
+  auto worldName = world_->Name();
 #else
   last_time_ = world_->GetSimTime();
   last_gps_time_ = world_->GetSimTime();
+  auto worldName = world_->GetName();
 #endif
 
   // Use environment variables if set for home position.
@@ -65,16 +67,23 @@ void GpsPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
   if (env_lat) {
     gzmsg << "Home latitude is set to " << env_lat << ".\n";
-    lat_home = std::stod(env_lat) * M_PI / 180.0;
+    lat_home = std::stod(env_lat);
   }
+  model_param(worldName, model_->GetName(), "home_lat", lat_home);
+  lat_rad_home =  lat_home * M_PI / 180.0;
+
   if (env_lon) {
     gzmsg << "Home longitude is set to " << env_lon << ".\n";
-    lon_home = std::stod(env_lon) * M_PI / 180.0;
+    lon_home = std::stod(env_lon);
   }
+  model_param(worldName, model_->GetName(), "home_lon", lon_home);
+  lon_rad_home =  lon_home * M_PI / 180.0;
+
   if (env_alt) {
     gzmsg << "Home altitude is set to " << env_alt << ".\n";
     alt_home = std::stod(env_alt);
   }
+  model_param(worldName, model_->GetName(), "home_alt", alt_home);
 
   namespace_.clear();
   if (_sdf->HasElement("robotNamespace")) {
@@ -228,11 +237,11 @@ std::pair<double, double> GpsPlugin::reproject(ignition::math::Vector3d& pos)
   double lat_rad, lon_rad;
 
   if (c != 0.0) {
-    lat_rad = asin(cos_c * sin(lat_home) + (x_rad * sin_c * cos(lat_home)) / c);
-    lon_rad = (lon_home + atan2(y_rad * sin_c, c * cos(lat_home) * cos_c - x_rad * sin(lat_home) * sin_c));
+    lat_rad = asin(cos_c * sin(lat_rad_home) + (x_rad * sin_c * cos(lat_rad_home)) / c);
+    lon_rad = (lon_rad_home + atan2(y_rad * sin_c, c * cos(lat_rad_home) * cos_c - x_rad * sin(lat_rad_home) * sin_c));
   } else {
-    lat_rad = lat_home;
-    lon_rad = lon_home;
+    lat_rad = lat_rad_home;
+    lon_rad = lon_rad_home;
   }
 
   return std::make_pair (lat_rad, lon_rad);
