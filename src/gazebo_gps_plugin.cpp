@@ -81,6 +81,9 @@ void GpsPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   }
   model_param(worldName, model_->GetName(), "home_alt", alt_home);
 
+  model_param(worldName, model_->GetName(), "gps_rate", gps_rate);
+  gps_update_interval_ = 1.0 / gps_rate;
+
   namespace_.clear();
   if (_sdf->HasElement("robotNamespace")) {
     namespace_ = _sdf->GetElement("robotNamespace")->Get<std::string>();
