@@ -84,6 +84,14 @@ void GpsPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   model_param(worldName, model_->GetName(), "gps_rate", gps_rate);
   gps_update_interval_ = 1.0 / gps_rate;
 
+  model_param(worldName, model_->GetName(), "gps_corellation_time", gps_corellation_time);
+  model_param(worldName, model_->GetName(), "gps_xy_random_walk", gps_xy_random_walk);
+  model_param(worldName, model_->GetName(), "gps_z_random_walk", gps_z_random_walk);
+  model_param(worldName, model_->GetName(), "gps_xy_noise_density", gps_xy_noise_density);
+  model_param(worldName, model_->GetName(), "gps_z_noise_density", gps_z_noise_density);
+  model_param(worldName, model_->GetName(), "gps_vxy_noise_density", gps_vxy_noise_density);
+  model_param(worldName, model_->GetName(), "gps_vz_noise_density", gps_vz_noise_density);
+
   namespace_.clear();
   if (_sdf->HasElement("robotNamespace")) {
     namespace_ = _sdf->GetElement("robotNamespace")->Get<std::string>();
