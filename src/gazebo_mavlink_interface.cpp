@@ -204,6 +204,26 @@ void GazeboMavlinkInterface::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf
   node_handle_ = transport::NodePtr(new transport::Node());
   node_handle_->Init(namespace_);
 
+  const char *env_dt = std::getenv("PX4_HOME_DT");
+  const char *env_lat = std::getenv("PX4_HOME_LAT");
+  const char *env_lon = std::getenv("PX4_HOME_LON");
+  const char *env_alt = std::getenv("PX4_HOME_ALT");
+
+  if (env_dt) {
+    home_dt = std::stod(env_dt);
+
+    lat_home_deg = std::stod(env_lat);
+    lon_home_deg = std::stod(env_lon);
+    alt_home = std::stod(env_alt);
+
+    gzmsg<<"PX4_HOME ("<< lat_home_deg <<","<< lon_home_deg <<","<< alt_home <<") DT "<< home_dt<<"\n";
+
+    home_init = true;
+  } else {
+    home_init = false;
+  }
+
+
   getSdfParam<std::string>(_sdf, "motorSpeedCommandPubTopic", motor_velocity_reference_pub_topic_,
       motor_velocity_reference_pub_topic_);
   getSdfParam<std::string>(_sdf, "imuSubTopic", imu_sub_topic_, imu_sub_topic_);
@@ -461,6 +481,8 @@ void GazeboMavlinkInterface::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf
   last_imu_time_ = world_->GetSimTime();
 #endif
 
+  start_time_ = last_time_;
+
   // This doesn't seem to be used anywhere but we leave it here
   // for potential compatibility
   if (_sdf->HasElement("imu_rate")) {
@@ -482,11 +504,13 @@ void GazeboMavlinkInterface::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf
 
   if (_sdf->HasElement("mavlink_udp_port")) {
     int mavlink_udp_port = _sdf->GetElement("mavlink_udp_port")->Get<int>();
+    model_param(worldName, model_->GetName(), "mavlink_udp_port", mavlink_udp_port);
     mavlink_interface_->SetMavlinkUdpPort(mavlink_udp_port);
   }
 
   if (_sdf->HasElement("mavlink_tcp_port")) {
     int mavlink_tcp_port = _sdf->GetElement("mavlink_tcp_port")->Get<int>();
+    model_param(worldName, model_->GetName(), "mavlink_tcp_port", mavlink_tcp_port);
     mavlink_interface_->SetMavlinkTcpPort(mavlink_tcp_port);
   }
 
@@ -797,6 +821,22 @@ void GazeboMavlinkInterface::SendGroundTruth()
   hil_state_quat.lon = groundtruth_lon_rad_ * 180 / M_PI * 1e7;
   hil_state_quat.alt = groundtruth_altitude_ * 1000;
 
+  if (home_init) {
+#if GAZEBO_MAJOR_VERSION >= 9
+    common::Time current_time = world_->SimTime();
+#else
+    common::Time current_time = world_->GetSimTime();
+#endif
+
+    double dt = (current_time - start_time_).Double();
+    if (dt < home_dt)
+    {
+      hil_state_quat.lat = lat_home_deg * 1e7;
+      hil_state_quat.lon = lon_home_deg * 1e7;
+      hil_state_quat.alt = alt_home * 1000;
+    }
+  }
+
   hil_state_quat.vx = vel_n.X() * 100;
   hil_state_quat.vy = vel_n.Y() * 100;
   hil_state_quat.vz = vel_n.Z() * 100;
@@ -826,9 +866,27 @@ void GazeboMavlinkInterface::GpsCallback(GpsPtr& gps_msg, const int& id) {
   mavlink_hil_gps_t hil_gps_msg;
   hil_gps_msg.time_usec = gps_msg->time_utc_usec();
   hil_gps_msg.fix_type = 3;
+
   hil_gps_msg.lat = gps_msg->latitude_deg() * 1e7;
   hil_gps_msg.lon = gps_msg->longitude_deg() * 1e7;
   hil_gps_msg.alt = gps_msg->altitude() * 1000.0;
+
+  if (home_init) {
+#if GAZEBO_MAJOR_VERSION >= 9
+    common::Time current_time = world_->SimTime();
+#else
+    common::Time current_time = world_->GetSimTime();
+#endif
+
+    double dt = (current_time - start_time_).Double();
+    if (dt < home_dt)
+    {
+      hil_gps_msg.lat = lat_home_deg * 1e7;
+      hil_gps_msg.lon = lon_home_deg * 1e7;
+      hil_gps_msg.alt = alt_home * 1000;
+    }
+  }
+
   hil_gps_msg.eph = gps_msg->eph() * 100.0;
   hil_gps_msg.epv = gps_msg->epv() * 100.0;
   hil_gps_msg.vel = gps_msg->velocity() * 100.0;

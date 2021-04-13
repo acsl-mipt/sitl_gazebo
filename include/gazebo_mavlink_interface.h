@@ -248,6 +248,14 @@ private:
   std::mutex last_imu_message_mutex_ {};
   std::condition_variable last_imu_message_cond_ {};
   sensor_msgs::msgs::Imu last_imu_message_;
+
+  common::Time start_time_;
+  double home_dt;
+  double lat_home_deg;
+  double lon_home_deg;
+  double alt_home;
+  bool home_init;
+
   common::Time last_time_;
   common::Time last_imu_time_;
   common::Time last_actuator_time_;
