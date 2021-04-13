@@ -100,8 +100,8 @@ endif()
 
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
-add_subdirectory( external/OpticalFlow OpticalFlow )
-set( OpticalFlow_LIBS "OpticalFlow" )
+#add_subdirectory( external/OpticalFlow OpticalFlow )
+#set( OpticalFlow_LIBS "OpticalFlow" )
 
 # for ROS subscribers and publishers
 if (BUILD_ROS_PLUGINS)
